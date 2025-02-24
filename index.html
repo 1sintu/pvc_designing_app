@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PVC Card Designer - Dark Theme</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom Dark Theme Styles */
+        body {
+            background-color: #1f2937;
+        }
+        input, textarea {
+            background-color: #4b5563;
+            color: #d1d5db;
+        }
+        input:focus, textarea:focus {
+            ring-color:#60a5fa;
+        }
+        /* Mobile-specific adjustments */
+        @media (max-width: 640px) {
+            .text-6xl { font-size: 2.5rem; }
+            .text-5xl { font-size: 2rem; }
+            .text-3xl { font-size: 1.5rem; }
+            .text-2xl { font-size: 1.25rem; }
+            .text-xl { font-size: 1rem; }
+            .container { padding-left: 1rem; padding-right: 1rem; }
+            #sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            #sidebar.active {
+                transform: translateX(0);
+            }
+        }
+        /* Modal Styles */
+        #auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #auth-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+        }
+        #auth-modal .modal-content {
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+        #auth-modal.active .modal-content {
+            transform: scale(1);
+        }
+        /* Tab Styles */
+        .tab-btn {
+            color: #d1d5db;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #60a5fa;
+            border-bottom: 2px solid #60a5fa;
+        }
+        .tab-btn:hover {
+            color: #93c5fd;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Input Group */
+        .input-group {
+            position: relative;
+        }
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        .input-group input {
+            padding-left: 2.5rem;
+            transition: all 0.3s ease;
+        }
+        .input-group input:focus {
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+        /* Gradient Button */
+        .gradient-btn {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            transition: all 0.3s ease;
+        }
+        .gradient-btn:hover {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.4);
+        }
+        /* Advanced Navbar Styles */
+        .nav-link {
+            position: relative;
+            padding-bottom: 4px;
+            overflow: hidden;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: #60a5fa;
+            transition: left 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .nav-link:hover::after {
+            left: 0;
+        }
+        .nav-link.active::after {
+            left: 0;
+        }
+        /* Section Animation */
+        .section {
+            opacity: 0;
+            transform: translateY(50px) scale(0.98);
+            transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        /* Smooth Scroll Container */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Social Media Icons Styles */
+        .social-icon {
+            font-size: 2.5rem;
+            color: #d1d5db;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+        }
+        .social-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+            color: #60a5fa;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+        @media (max-width: 640px) {
+            .social-icon {
+                font-size: 2rem;
+            }
+        }
+        /* Advanced Footer Styles */
+        footer a {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        footer a:hover {
+            color: #60a5fa;
+            transform: translateX(5px);
+        }
+        .footer-social-icon {
+            font-size: 1.5rem;
+            color: #d1d5db;
+            transition: all 0.3s ease;
+        }
+        .footer-social-icon:hover {
+            color: #60a5fa;
+            transform: scale(1.15);
+        }
+        .newsletter-input {
+            background-color: #4b5563;
+            color: #d1d5db;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem 0 0 0.5rem;
+            width: 100%;
+        }
+        .newsletter-input:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(96, 165, 250, 0.5);
+        }
+        .newsletter-btn {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        .newsletter-btn:hover {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+        /* Advanced Card Styles for Services and Feedback */
+        .service-card, .feedback-card {
+            position: relative;
+            background: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .service-card::before, .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(59, 130, 246, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+        .service-card:hover, .feedback-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .service-card:hover::before, .feedback-card:hover::before {
+            opacity: 1;
+        }
+        .service-card > *, .feedback-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        .service-card i, .feedback-card i {
+            transition: transform 0.4s ease, color 0.4s ease;
+        }
+        .service-card:hover i, .feedback-card:hover i {
+            transform: scale(1.1);
+            color: #60a5fa;
+        }
+        .service-card button {
+            transition: all 0.3s ease;
+        }
+        .service-card:hover button {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            transform: scale(1.05);
+        }
+        .feedback-card p {
+            transition: color 0.4s ease;
+        }
+        .feedback-card:hover p {
+            color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-blue-800 to-blue-600 p-4 sticky top-0 z-10">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">PVC Card Designer</h1>
+            <button id="menu-btn" class="sm:hidden text-white text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="hidden sm:flex sm:space-x-6">
+                <a href="#home" class="nav-link hover:text-blue-400 transition duration-300">Home</a>
+                <a href="#about" class="nav-link hover:text-blue-400 transition duration-300">About Us</a>
+                <a href="#services" class="nav-link hover:text-blue-400 transition duration-300">Services</a>
+                <a href="#contact" class="nav-link hover:text-blue-400 transition duration-300">Contact Us</a>
+                <button id="auth-btn-desktop" class="hover:text-blue-400 transition duration-300">Account</button>
+            </div>
+        </div>
+        <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-gray-800 p-6 transform sm:hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button id="close-btn" class="text-white text-2xl focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="flex flex-col space-y-4">
+                <a href="#home" class="nav-link hover:text-blue-400 transition duration-300">Home</a>
+                <a href="#about" class="nav-link hover:text-blue-400 transition duration-300">About Us</a>
+                <a href="#services" class="nav-link hover:text-blue-400 transition duration-300">Services</a>
+                <a href="#contact" class="nav-link hover:text-blue-400 transition duration-300">Contact Us</a>
+                <button id="auth-btn-mobile" class="text-left hover:text-blue-400 transition duration-300">Account</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal">
+        <div class="modal-content bg-gray-800 p-6 sm:p-8 rounded-2xl w-full max-w-md mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl sm:text-3xl font-bold text-blue-400">Account</h2>
+                <button id="close-modal" class="text-white text-2xl hover:text-blue-400 focus:outline-none transition duration-300">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="flex justify-between mb-6 border-b border-gray-700">
+                <button id="login-tab" class="tab-btn flex-1 py-2 text-center text-sm sm:text-base active">Login</button>
+                <button id="register-tab" class="tab-btn flex-1 py-2 text-center text-sm sm:text-base">Register</button>
+                <button id="reset-tab" class="tab-btn flex-1 py-2 text-center text-sm sm:text-base">Reset Password</button>
+            </div>
+            <div id="login-content" class="tab-content active">
+                <form id="login-form">
+                    <div class="input-group mb-4 sm:mb-6">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="login-username" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Username" required>
+                    </div>
+                    <div class="input-group mb-4 sm:mb-6">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="gradient-btn w-full text-white p-3 sm:p-4 rounded-full text-sm sm:text-base flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    </button>
+                </form>
+            </div>
+            <div id="register-content" class="tab-content">
+                <form id="register-form">
+                    <div class="input-group mb-4 sm:mb-6">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="register-username" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Username" required>
+                    </div>
+                    <div class="input-group mb-4 sm:mb-6">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="register-email" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Email" required>
+                    </div>
+                    <div class="input-group mb-4 sm:mb-6">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="register-password" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="gradient-btn w-full text-white p-3 sm:p-4 rounded-full text-sm sm:text-base flex items-center justify-center">
+                        <i class="fas fa-user-plus mr-2"></i> Register
+                    </button>
+                </form>
+            </div>
+            <div id="reset-content" class="tab-content">
+                <form id="reset-form">
+                    <div class="input-group mb-4 sm:mb-6">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="reset-email" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Email" required>
+                    </div>
+                    <button type="submit" class="gradient-btn w-full text-white p-3 sm:p-4 rounded-full text-sm sm:text-base flex items-center justify-center">
+                        <i class="fas fa-key mr-2"></i> Reset Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Section -->
+    <section id="home" class="section bg-gradient-to-br from-gray-800 to-blue-900 py-12 sm:py-24 text-center">
+        <div class="container mx-auto px-4 sm:px-6">
+            <h2 class="text-4xl sm:text-6xl font-bold mb-4 sm:mb-6">Welcome to PVC Card Designer</h2>
+            <p class="text-lg sm:text-2xl max-w-3xl mx-auto mb-6 sm:mb-8">Craft premium PVC cards—perfect for any purpose.</p>
+            <a href="#services" class="inline-block bg-blue-600 text-white px-6 py-3 sm:px-10 sm:py-4 rounded-full font-semibold hover:bg-blue-700 transition duration-300">Explore Services</a>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="section container mx-auto mt-10 sm:mt-16 p-4 sm:p-8">
+        <h2 class="text-3xl sm:text-5xl font-semibold text-center mb-8 sm:mb-10">About Us</h2>
+        <div class="bg-gray-800 p-6 sm:p-10 rounded-2xl max-w-4xl mx-auto">
+            <p class="text-base sm:text-xl text-gray-400 leading-relaxed">
+                We bring your ideas to life with advanced printing technology. Our mission is to deliver high-quality PVC cards with style and precision.
+            </p>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section container mx-auto mt-10 sm:mt-16 p-4 sm:p-8">
+        <h2 class="text-3xl sm:text-5xl font-semibold text-center mb-8 sm:mb-12">Our Services</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
+            <div class="service-card text-center">
+                <i class="fas fa-id-card text-4xl sm:text-5xl text-blue-400 mb-4 sm:mb-6"></i>
+                <h3 class="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Custom PVC Cards</h3>
+                <p class="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">Personalized cards tailored to your needs.</p>
+                <button onclick="openOrderPage('Custom PVC Cards')" class="bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full hover:bg-blue-700 transition duration-300 text-sm sm:text-base"><a href="order.html">Order Now</a></button>
+
+               
+            </div>
+            <div class="service-card text-center">
+                <i class="fas fa-boxes text-4xl sm:text-5xl text-blue-400 mb-4 sm:mb-6"></i>
+                <h3 class="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Bulk Orders</h3>
+                <p class="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">Large quantities with consistent quality.</p>
+                <button onclick="openOrderPage('Bulk Orders')" class="bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full hover:bg-blue-700 transition duration-300 text-sm sm:text-base"><a href="order.html">Order Now</a></button>
+            </div>
+            <div class="service-card text-center">
+                <i class="fas fa-shipping-fast text-4xl sm:text-5xl text-blue-400 mb-4 sm:mb-6"></i>
+                <h3 class="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Fast Delivery</h3>
+                <p class="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">Swift shipping worldwide.</p>
+                <button onclick="openOrderPage('Fast Delivery')" class="bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full hover:bg-blue-700 transition duration-300 text-sm sm:text-base"><a href="order.html">Order Now</a></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Feedback Section -->
+    <section id="feedback" class="section container mx-auto mt-10 sm:mt-16 p-4 sm:p-8">
+        <h2 class="text-3xl sm:text-5xl font-semibold text-center mb-8 sm:mb-12">Customer Feedback</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
+            <div class="feedback-card text-center">
+                <i class="fas fa-quote-left text-2xl sm:text-3xl text-blue-400 mb-3 sm:mb-4"></i>
+                <p class="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">"The custom PVC cards exceeded my expectations—great quality and fast service!"</p>
+                <h4 class="text-lg sm:text-xl font-semibold">John Doe</h4>
+                <p class="text-gray-500 text-xs sm:text-sm">Small Business Owner</p>
+            </div>
+            <div class="feedback-card text-center">
+                <i class="fas fa-quote-left text-2xl sm:text-3xl text-blue-400 mb-3 sm:mb-4"></i>
+                <p class="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">"Ordering in bulk was a breeze, and the delivery was right on time."</p>
+                <h4 class="text-lg sm:text-xl font-semibold">Sarah Smith</h4>
+                <p class="text-gray-500 text-xs sm:text-sm">Event Organizer</p>
+            </div>
+            <div class="feedback-card text-center">
+                <i class="fas fa-quote-left text-2xl sm:text-3xl text-blue-400 mb-3 sm:mb-4"></i>
+                <p class="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">"Fantastic design options and excellent customer support."</p>
+                <h4 class="text-lg sm:text-xl font-semibold">Mike Johnson</h4>
+                <p class="text-gray-500 text-xs sm:text-sm">Freelancer</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Media Section -->
+    <section id="social-media" class="section container mx-auto mt-10 sm:mt-16 p-4 sm:p-8 text-center">
+        <h2 class="text-3xl sm:text-5xl font-semibold mb-8 sm:mb-12">Follow Us</h2>
+        <div class="flex justify-center space-x-6 sm:space-x-10">
+            <a href="https://facebook.com" target="_blank" class="social-icon" title="Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="social-icon" title="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://linkedin.com" target="_blank" class="social-icon" title="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Contact Us Section -->
+    <section id="contact" class="section container mx-auto mt-10 sm:mt-16 p-4 sm:p-8">
+        <h2 class="text-3xl sm:text-5xl font-semibold text-center mb-8 sm:mb-12">Contact Us</h2>
+        <form id="contact-form" class="bg-gray-800 p-6 sm:p-10 rounded-2xl max-w-2xl mx-auto">
+            <div class="mb-6 sm:mb-8">
+                <label for="contact-name" class="block text-gray-400 font-medium mb-2 sm:mb-3">Name</label>
+                <input type="text" id="contact-name" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-6 sm:mb-8">
+                <label for="contact-email" class="block text-gray-400 font-medium mb-2 sm:mb-3">Email</label>
+                <input type="email" id="contact-email" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-6 sm:mb-8">
+                <label for="message" class="block text-gray-400 font-medium mb-2 sm:mb-3">Message</label>
+                <textarea id="message" class="w-full p-3 sm:p-4 border-none rounded-lg focus:ring-2 focus:ring-blue-500" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 sm:p-4 rounded-full hover:bg-blue-700 transition duration-300 text-sm sm:text-base">Send Message</button>
+        </form>
+    </section>
+
+    <!-- Advanced Footer -->
+    <footer class="bg-gradient-to-r from-blue-800 to-blue-600 p-6 sm:p-8 mt-10 sm:mt-16">
+        <div class="container mx-auto">
+            <div class="footer-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">PVC Card Designer</h3>
+                    <p class="text-gray-400 text-sm sm:text-base">Crafting premium PVC cards since 2025. Your vision, our precision.</p>
+                    <p class="text-gray-500 text-xs mt-2">© 2025 All rights reserved.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <!-- <li><a href="#home" class="nav-link hover:text-blue-400">Home</a></li>
+                        <li><a href="#about" class="nav-link hover:text-blue-400">About Us</a></li>
+                        <li><a href="#services" class="nav-link hover:text-blue-400">Services</a></li>
+                        <li><a href="#contact" class="nav-link hover:text-blue-400">Contact Us</a></li> -->
+
+
+                        <li><a href="#home" class="">Home</a></li>
+                        <li><a href="#about" class="">About Us</a></li>
+                        <li><a href="#services" class="">Services</a></li>
+                        <li><a href="#contact" class="">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="footer-social-icon" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="footer-social-icon" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" class="footer-social-icon" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Newsletter</h3>
+                    <p class="text-gray-400 text-sm sm:text-base mb-4">Stay updated with our latest offers!</p>
+                    <form id="newsletter-form" class="flex">
+                        <input type="email" id="newsletter-email" class="newsletter-input" placeholder="Your Email" required>
+                        <button type="submit" class="newsletter-btn"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
